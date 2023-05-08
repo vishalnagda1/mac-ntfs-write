@@ -1,8 +1,17 @@
 #!/bin/bash
 
-# Change the values below to match your drive's name and identifier
-DRIVE_NAME="DRIVENAME"  # replace "DRIVENAME" with the name of the NTFS-formatted drive.
-DRIVE_IDENTIFIER="/dev/disk2s1"  # replace "disk2s1" with the disk identifier of the NTFS-formatted drive.
+# Find the first NTFS-formatted drive
+DRIVE_NAME=$(diskutil list | grep "Microsoft Basic Data" | head -n 1 | awk '{print $NF}')
+# you might need to change the "Microsoft Basic Data" if it doesn't detect the drive
+
+# Check if a valid drive was found
+if [ -z "$DRIVE_NAME" ]; then
+    echo "No NTFS-formatted drive found"
+    exit 1
+fi
+
+# Get the drive identifier
+DRIVE_IDENTIFIER=$(diskutil list | grep "$DRIVE_NAME" | awk '{print $NF}')
 
 # Create a mount point for the drive
 sudo mkdir "/Volumes/$DRIVE_NAME"
